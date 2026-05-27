@@ -39,4 +39,6 @@ public interface BeerClient {
      Page<BeerDTO> listBeers(Boolean showInventoryOnHand, Integer pageNumber, Integer pageSize);
 
     BeerDTO getBeerById(UUID beerId);
+
+    BeerDTO createBeer(BeerDTO newDTO);
 }
