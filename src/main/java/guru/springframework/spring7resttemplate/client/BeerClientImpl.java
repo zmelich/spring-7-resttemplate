@@ -7,6 +7,7 @@ Created by Zsolt Melich (BT - IVR team)
 
 import guru.springframework.spring7resttemplate.model.BeerDTO;
 import guru.springframework.spring7resttemplate.model.BeerDTOPageImpl;
+import guru.springframework.spring7resttemplate.model.BeerStyle;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.data.domain.Page;
@@ -25,13 +26,48 @@ public class BeerClientImpl implements BeerClient {
     private static final String GET_BEER_PATH="/api/v1/beer";
 
     @Override
+    public Page<BeerDTO> listBeers() {
+        return this.listBeers(null, null, null, null, null);
+    }
+
+    @Override
+    public Page<BeerDTO> listBeers(String beerName, BeerStyle beerStyle, Boolean showInventoryOnHand, Integer pageNumber, Integer pageSize) {
+        RestTemplate  restTemplate = restTemplateBuilder.build();
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromPath(GET_BEER_PATH);
+
+        if (beerName!=null){
+            uriComponentsBuilder.queryParam("beerName", beerName);
+        }
+        if (beerStyle!=null){
+            uriComponentsBuilder.queryParam("beerStyle", beerStyle.toString());
+        }
+
+        if (showInventoryOnHand!=null){
+            uriComponentsBuilder.queryParam("showInventoryOnHand", Boolean.toString(showInventoryOnHand));
+        }
+
+        if (pageNumber != null) {
+            uriComponentsBuilder.queryParam("pageNumber", pageNumber);
+        }
+        if (pageSize != null) {
+            uriComponentsBuilder.queryParam("pageSize", pageSize);
+        }
+
+        ResponseEntity<BeerDTOPageImpl> response = restTemplate
+                .getForEntity(uriComponentsBuilder.toUriString(), BeerDTOPageImpl.class);
+
+        return response.getBody();
+    }
+
+    @Override
     public Page<BeerDTO> listBeers(String beerName) {
 
         RestTemplate  restTemplate = restTemplateBuilder.build();
 
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromPath(GET_BEER_PATH);
 
-        if (beerName != null) {
+        if (beerName!=null){
             uriComponentsBuilder.queryParam("beerName", beerName);
         }
 
@@ -42,4 +78,245 @@ public class BeerClientImpl implements BeerClient {
 
         return response.getBody();
     }
+
+    @Override
+    public Page<BeerDTO> listBeers(BeerStyle beerStyle) {
+        RestTemplate  restTemplate = restTemplateBuilder.build();
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromPath(GET_BEER_PATH);
+
+        if (beerStyle!=null){
+            uriComponentsBuilder.queryParam("beerStyle", beerStyle.toString());
+        }
+
+        ResponseEntity<BeerDTOPageImpl> response = restTemplate
+                .getForEntity(uriComponentsBuilder.toUriString(), BeerDTOPageImpl.class);
+
+        return response.getBody();
+    }
+
+    @Override
+    public Page<BeerDTO> listBeers(Boolean showInventoryOnHand) {
+        RestTemplate  restTemplate = restTemplateBuilder.build();
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromPath(GET_BEER_PATH);
+
+        if (showInventoryOnHand!=null){
+            uriComponentsBuilder.queryParam("showInventoryOnHand", Boolean.toString(showInventoryOnHand));
+        }
+
+        ResponseEntity<BeerDTOPageImpl> response = restTemplate
+                .getForEntity(uriComponentsBuilder.toUriString(), BeerDTOPageImpl.class);
+
+        return response.getBody();
+    }
+
+    @Override
+    public Page<BeerDTO> listBeers(Integer pageSize) {
+        RestTemplate  restTemplate = restTemplateBuilder.build();
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromPath(GET_BEER_PATH);
+
+        if (pageSize != null) {
+            uriComponentsBuilder.queryParam("pageSize", pageSize);
+        }
+
+        ResponseEntity<BeerDTOPageImpl> response = restTemplate
+                .getForEntity(uriComponentsBuilder.toUriString(), BeerDTOPageImpl.class);
+
+        return response.getBody();
+    }
+
+    @Override
+    public Page<BeerDTO> listBeers(Integer pageNumber, Integer pageSize) {
+        RestTemplate  restTemplate = restTemplateBuilder.build();
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromPath(GET_BEER_PATH);
+
+        if (pageNumber != null) {
+            uriComponentsBuilder.queryParam("pageNumber", pageNumber);
+        }
+        if (pageSize != null) {
+            uriComponentsBuilder.queryParam("pageSize", pageSize);
+        }
+
+        ResponseEntity<BeerDTOPageImpl> response = restTemplate
+                .getForEntity(uriComponentsBuilder.toUriString(), BeerDTOPageImpl.class);
+
+        return response.getBody();
+    }
+
+    @Override
+    public Page<BeerDTO> listBeers(String beerName, BeerStyle beerStyle, Boolean showInventoryOnHand, Integer pageNumber) {
+        RestTemplate  restTemplate = restTemplateBuilder.build();
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromPath(GET_BEER_PATH);
+
+        if (beerStyle!=null){
+            uriComponentsBuilder.queryParam("beerStyle", beerStyle.toString());
+        }
+
+        if (showInventoryOnHand!=null){
+            uriComponentsBuilder.queryParam("showInventoryOnHand", Boolean.toString(showInventoryOnHand));
+        }
+
+        if (pageNumber != null) {
+            uriComponentsBuilder.queryParam("pageNumber", pageNumber);
+        }
+
+        ResponseEntity<BeerDTOPageImpl> response = restTemplate
+                .getForEntity(uriComponentsBuilder.toUriString(), BeerDTOPageImpl.class);
+
+        return response.getBody();
+    }
+
+    @Override
+    public Page<BeerDTO> listBeers(String beerName, BeerStyle beerStyle, Boolean showInventoryOnHand) {
+        RestTemplate  restTemplate = restTemplateBuilder.build();
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromPath(GET_BEER_PATH);
+
+        if (beerName!=null){
+            uriComponentsBuilder.queryParam("beerName", beerName);
+        }
+        if (beerStyle!=null){
+            uriComponentsBuilder.queryParam("beerStyle", beerStyle.toString());
+        }
+
+        if (showInventoryOnHand!=null){
+            uriComponentsBuilder.queryParam("showInventoryOnHand", Boolean.toString(showInventoryOnHand));
+        }
+
+        ResponseEntity<BeerDTOPageImpl> response = restTemplate
+                .getForEntity(uriComponentsBuilder.toUriString(), BeerDTOPageImpl.class);
+
+        return response.getBody();
+    }
+
+    @Override
+    public Page<BeerDTO> listBeers(String beerName, BeerStyle beerStyle) {
+        RestTemplate  restTemplate = restTemplateBuilder.build();
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromPath(GET_BEER_PATH);
+
+        if (beerName!=null){
+            uriComponentsBuilder.queryParam("beerName", beerName);
+        }
+        if (beerStyle!=null){
+            uriComponentsBuilder.queryParam("beerStyle", beerStyle.toString());
+        }
+
+        ResponseEntity<BeerDTOPageImpl> response = restTemplate
+                .getForEntity(uriComponentsBuilder.toUriString(), BeerDTOPageImpl.class);
+
+        return response.getBody();
+    }
+
+    @Override
+    public Page<BeerDTO> listBeers(String beerName, Boolean showInventoryOnHand) {
+        RestTemplate  restTemplate = restTemplateBuilder.build();
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromPath(GET_BEER_PATH);
+
+        if (beerName!=null){
+            uriComponentsBuilder.queryParam("beerName", beerName);
+        }
+
+        if (showInventoryOnHand!=null){
+            uriComponentsBuilder.queryParam("showInventoryOnHand", Boolean.toString(showInventoryOnHand));
+        }
+
+        ResponseEntity<BeerDTOPageImpl> response = restTemplate
+                .getForEntity(uriComponentsBuilder.toUriString(), BeerDTOPageImpl.class);
+
+        return response.getBody();
+    }
+
+    @Override
+    public Page<BeerDTO> listBeers(BeerStyle beerStyle, Boolean showInventoryOnHand) {
+        RestTemplate  restTemplate = restTemplateBuilder.build();
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromPath(GET_BEER_PATH);
+
+        if (beerStyle!=null){
+            uriComponentsBuilder.queryParam("beerStyle", beerStyle.toString());
+        }
+
+        if (showInventoryOnHand!=null){
+            uriComponentsBuilder.queryParam("showInventoryOnHand", Boolean.toString(showInventoryOnHand));
+        }
+
+        ResponseEntity<BeerDTOPageImpl> response = restTemplate
+                .getForEntity(uriComponentsBuilder.toUriString(), BeerDTOPageImpl.class);
+
+        return response.getBody();
+    }
+
+    @Override
+    public Page<BeerDTO> listBeers(String beerName, Integer pageNumber, Integer pageSize) {
+        RestTemplate  restTemplate = restTemplateBuilder.build();
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromPath(GET_BEER_PATH);
+
+        if (beerName!=null){
+            uriComponentsBuilder.queryParam("beerName", beerName);
+        }
+        if (pageNumber != null) {
+            uriComponentsBuilder.queryParam("pageNumber", pageNumber);
+        }
+        if (pageSize != null) {
+            uriComponentsBuilder.queryParam("pageSize", pageSize);
+        }
+
+        ResponseEntity<BeerDTOPageImpl> response = restTemplate
+                .getForEntity(uriComponentsBuilder.toUriString(), BeerDTOPageImpl.class);
+
+        return response.getBody();
+    }
+
+    @Override
+    public Page<BeerDTO> listBeers(BeerStyle beerStyle, Integer pageNumber, Integer pageSize) {
+        RestTemplate  restTemplate = restTemplateBuilder.build();
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromPath(GET_BEER_PATH);
+
+        if (beerStyle!=null){
+            uriComponentsBuilder.queryParam("beerStyle", beerStyle.toString());
+        }
+        if (pageNumber != null) {
+            uriComponentsBuilder.queryParam("pageNumber", pageNumber);
+        }
+        if (pageSize != null) {
+            uriComponentsBuilder.queryParam("pageSize", pageSize);
+        }
+
+        ResponseEntity<BeerDTOPageImpl> response = restTemplate
+                .getForEntity(uriComponentsBuilder.toUriString(), BeerDTOPageImpl.class);
+
+        return response.getBody();
+    }
+
+    @Override
+    public Page<BeerDTO> listBeers(Boolean showInventoryOnHand, Integer pageNumber, Integer pageSize) {
+        RestTemplate  restTemplate = restTemplateBuilder.build();
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromPath(GET_BEER_PATH);
+
+        if (showInventoryOnHand!=null){
+            uriComponentsBuilder.queryParam("showInventoryOnHand", Boolean.toString(showInventoryOnHand));
+        }
+        if (pageNumber != null) {
+            uriComponentsBuilder.queryParam("pageNumber", pageNumber);
+        }
+        if (pageSize != null) {
+            uriComponentsBuilder.queryParam("pageSize", pageSize);
+        }
+
+        ResponseEntity<BeerDTOPageImpl> response = restTemplate
+                .getForEntity(uriComponentsBuilder.toUriString(), BeerDTOPageImpl.class);
+
+        return response.getBody();
+    }
+
+
 }
