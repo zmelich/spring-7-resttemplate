@@ -6,11 +6,19 @@ Created by Zsolt Melich (BT - IVR team)
 */
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import guru.springframework.spring7resttemplate.config.RestTemplateBuilderConfig;
 import guru.springframework.spring7resttemplate.model.BeerDTO;
 import guru.springframework.spring7resttemplate.model.BeerDTOPageImpl;
 import guru.springframework.spring7resttemplate.model.BeerStyle;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.restclient.RestTemplateBuilder;
+import org.springframework.boot.restclient.test.MockServerRestTemplateCustomizer;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
@@ -21,32 +29,48 @@ import org.springframework.boot.restclient.test.autoconfigure.RestClientTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.RestTemplate;
 import tools.jackson.databind.ObjectMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-@RestClientTest(BeerClientImpl.class)
+@RestClientTest
+@Import(RestTemplateBuilderConfig.class)
+@ExtendWith(MockitoExtension.class)
 public class BeerClientMockTest {
 
-    @Autowired
+    final static String URL = "http://localhost:8080";
+
     BeerClient beerClient;
 
+    MockRestServiceServer server;
+
     @Autowired
-    MockRestServiceServer mockRestServiceServer;
+    RestTemplateBuilder restTemplateBuilderConfigured;
 
     @Autowired
     ObjectMapper objectMapper;
 
-    final static String URL = "http:/localhost:8080";
+    @Mock
+    RestTemplateBuilder mockRestTemplateBuilder = new RestTemplateBuilder(new MockServerRestTemplateCustomizer());
+
+    @BeforeEach
+    void setUp(){
+        RestTemplate restTemplate = restTemplateBuilderConfigured.build();
+        server = MockRestServiceServer.bindTo(restTemplate).build();
+        when(mockRestTemplateBuilder.build()).thenReturn(restTemplate);
+        beerClient = new BeerClientImpl(mockRestTemplateBuilder);
+    }
 
     @Test
     void testListBeers() throws JsonProcessingException {
         String payload = objectMapper.writeValueAsString(getPage());
 
-        mockRestServiceServer.expect(method(HttpMethod.GET))
+        server.expect(method(HttpMethod.GET))
                 .andExpect(requestTo(URL + BeerClientImpl.GET_BEER_PATH))
                 .andRespond(withSuccess(payload, MediaType.APPLICATION_JSON));
 
