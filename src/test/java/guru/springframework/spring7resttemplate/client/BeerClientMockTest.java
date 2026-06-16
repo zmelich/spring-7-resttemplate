@@ -34,8 +34,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @RestClientTest
@@ -67,6 +66,22 @@ public class BeerClientMockTest {
     }
 
     @Test
+    void testGetBeerById()
+    {
+        UUID beerIdInput = UUID.randomUUID();
+        BeerDTO beerPayloadToReturn = getBeerDto(beerIdInput);
+        String stringPayload = objectMapper.writeValueAsString(beerPayloadToReturn);
+
+        server.expect(method(HttpMethod.GET))
+                .andExpect(requestToUriTemplate(URL + BeerClientImpl.GET_BEER_BY_ID_PATH,beerIdInput))
+                .andRespond(withSuccess(stringPayload, MediaType.APPLICATION_JSON));
+
+        BeerDTO returnedBeer = beerClient.getBeerById(beerIdInput);
+
+        assertThat(returnedBeer.getId()).isEqualTo(beerIdInput);
+    }
+
+    @Test
     void testListBeers() throws JsonProcessingException {
         String payload = objectMapper.writeValueAsString(getPage());
 
@@ -79,6 +94,18 @@ public class BeerClientMockTest {
         assertThat(dtos.getContent().size()).isGreaterThan(0);
     }
 
+    BeerDTO getBeerDto(UUID customId)
+    {
+        return BeerDTO.builder()
+                .id(customId)
+                .price(new BigDecimal("9.99"))
+                .beerName("Zsolt's delight")
+                .beerStyle(BeerStyle.LAGER)
+                .quantityOnHand(400)
+                .upc("12347")
+                .build();
+    }
+
     BeerDTO getBeerDto(){
         return BeerDTO.builder()
                 .id(UUID.randomUUID())
@@ -89,6 +116,8 @@ public class BeerClientMockTest {
                 .upc("12345")
                 .build();
     }
+
+
 
     BeerDTOPageImpl getPage(){
         return new BeerDTOPageImpl(Arrays.asList(getBeerDto()),1,25,1);
