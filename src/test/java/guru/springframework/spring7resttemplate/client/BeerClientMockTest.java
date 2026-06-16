@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -30,11 +31,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import tools.jackson.databind.ObjectMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withAccepted;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @RestClientTest
@@ -64,6 +67,24 @@ public class BeerClientMockTest {
         when(mockRestTemplateBuilder.build()).thenReturn(restTemplate);
         beerClient = new BeerClientImpl(mockRestTemplateBuilder);
     }
+
+    @Test
+    void testCreateBeer()
+    {
+        BeerDTO beerPayloadToCreate = getBeerDto();
+        String stringPayload = objectMapper.writeValueAsString(beerPayloadToCreate);
+
+        URI uri = UriComponentsBuilder.fromPath(
+                        BeerClientImpl.GET_BEER_BY_ID_PATH)
+                        .build(beerPayloadToCreate.getId());
+
+        server.expect(method(HttpMethod.POST))
+                        .andExpect(requestTo(URL+
+                                BeerClientImpl.GET_BEER_PATH))
+                        .andRespond(withAccepted().location(uri));
+
+    }
+
 
     @Test
     void testGetBeerById()
