@@ -60,12 +60,18 @@ public class BeerClientMockTest {
     @Mock
     RestTemplateBuilder mockRestTemplateBuilder = new RestTemplateBuilder(new MockServerRestTemplateCustomizer());
 
+    BeerDTO dto;
+    String dtoJson;
+
     @BeforeEach
     void setUp(){
         RestTemplate restTemplate = restTemplateBuilderConfigured.build();
         server = MockRestServiceServer.bindTo(restTemplate).build();
         when(mockRestTemplateBuilder.build()).thenReturn(restTemplate);
         beerClient = new BeerClientImpl(mockRestTemplateBuilder);
+        dto = getBeerDto();
+        dtoJson = objectMapper.writeValueAsString(dto);
+
     }
 
     @Test
@@ -76,30 +82,32 @@ public class BeerClientMockTest {
 
         URI uri = UriComponentsBuilder.fromPath(
                         BeerClientImpl.GET_BEER_BY_ID_PATH)
-                        .build(beerPayloadToCreate.getId());
+                        .build(dto.getId());
 
         server.expect(method(HttpMethod.POST))
                         .andExpect(requestTo(URL+
                                 BeerClientImpl.GET_BEER_PATH))
                         .andRespond(withAccepted().location(uri));
 
+        server.expect(method(HttpMethod.GET))
+                .andExpect(requestToUriTemplate(URL + BeerClientImpl.GET_BEER_BY_ID_PATH,dto.getId()))
+                .andRespond(withSuccess(dtoJson, MediaType.APPLICATION_JSON));
+
+        BeerDTO returnedBeer = beerClient.createBeer(dto);
+        assertThat(returnedBeer.getId()).isEqualTo(dto.getId());
     }
 
 
     @Test
     void testGetBeerById()
     {
-        UUID beerIdInput = UUID.randomUUID();
-        BeerDTO beerPayloadToReturn = getBeerDto(beerIdInput);
-        String stringPayload = objectMapper.writeValueAsString(beerPayloadToReturn);
 
         server.expect(method(HttpMethod.GET))
-                .andExpect(requestToUriTemplate(URL + BeerClientImpl.GET_BEER_BY_ID_PATH,beerIdInput))
-                .andRespond(withSuccess(stringPayload, MediaType.APPLICATION_JSON));
+                .andExpect(requestToUriTemplate(URL + BeerClientImpl.GET_BEER_BY_ID_PATH,dto.getId()))
+                .andRespond(withSuccess(dtoJson, MediaType.APPLICATION_JSON));
 
-        BeerDTO returnedBeer = beerClient.getBeerById(beerIdInput);
-
-        assertThat(returnedBeer.getId()).isEqualTo(beerIdInput);
+        BeerDTO returnedBeer = beerClient.getBeerById(dto.getId());
+        assertThat(returnedBeer.getId()).isEqualTo(dto.getId());
     }
 
     @Test
