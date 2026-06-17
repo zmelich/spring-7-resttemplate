@@ -83,6 +83,13 @@ public class BeerClientMockTest {
                                 BeerClientImpl.GET_BEER_PATH))
                         .andRespond(withAccepted().location(uri));
 
+        server.expect(method(HttpMethod.GET))
+                .andExpect(requestToUriTemplate(URL + BeerClientImpl.GET_BEER_BY_ID_PATH,beerPayloadToCreate.getId()))
+                .andRespond(withSuccess(stringPayload, MediaType.APPLICATION_JSON));
+
+        BeerDTO returnedBeer = beerClient.createBeer(beerPayloadToCreate);
+        assertThat(returnedBeer.getId()).isEqualTo(beerPayloadToCreate.getId());
+
     }
 
 
